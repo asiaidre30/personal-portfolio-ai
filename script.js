@@ -436,12 +436,16 @@
     }
   }
 
-  /* ---- Collision detection (circle vs triangle bounding box) ---- */
+  /* ---- Collision detection — circle vs circle ----
+     Ship gets a small tight radius (8px) so only a direct hit counts.
+     Asteroids get 70% of their visual size so near-misses feel fair. */
   function hitTest(a) {
-    return (
-      Math.abs(a.x - ship.x) < a.size + ship.w / 2 &&
-      Math.abs(a.y - ship.y) < a.size + ship.h / 2
-    );
+    const dx         = a.x - ship.x;
+    const dy         = a.y - ship.y;
+    const dist       = Math.sqrt(dx * dx + dy * dy);
+    const shipRadius = 8;               /* tight circle around ship center */
+    const astRadius  = a.size * 0.70;   /* slightly smaller than the visual */
+    return dist < shipRadius + astRadius;
   }
 
   /* ---- Main game update loop ---- */
