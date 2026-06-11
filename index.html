@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Asia Idrees | Software Engineer</title>
+
+  <!-- Google Fonts: Orbitron for headings (sci-fi feel), Inter for body -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ===================== STAR CANVAS =====================
+       A <canvas> element that fills the entire page background.
+       JavaScript will draw and animate stars on this canvas. -->
+  <canvas id="starfield"></canvas>
+
+  <!-- ===================== NAVBAR ===================== -->
+  <nav id="navbar">
+    <div class="nav-logo">✦ Asia Idrees</div>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#game">Mini Game</a></li>
+      <li><a href="#memes">Meme Gen</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <!-- Hamburger icon for mobile nav toggle -->
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu">☰</button>
+  </nav>
+
+  <!-- ===================== HERO SECTION =====================
+       First thing visitors see — name, title, and a call-to-action. -->
+  <section id="hero">
+    <!-- Floating nebula blobs for a galaxy depth effect -->
+    <div class="nebula nebula-1"></div>
+    <div class="nebula nebula-2"></div>
+    <div class="nebula nebula-3"></div>
+
+    <div class="hero-content">
+      <!-- Animated greeting tag -->
+      <p class="hero-tag">✦ Welcome to my universe ✦</p>
+
+      <!-- Name with a gradient glow effect -->
+      <h1 class="hero-name">Asia<br/><span>Idrees</span></h1>
+
+      <p class="hero-title">Aspiring Software Engineer &nbsp;·&nbsp; Marcy Lab Fellow &nbsp;·&nbsp; PERN Stack Developer</p>
+
+      <p class="hero-sub">
+        Pakistani Muslim woman in tech — building technology that makes everyday life
+        easier, more accessible, and more human.
+      </p>
+
+      <!-- CTA buttons -->
+      <div class="hero-buttons">
+        <a href="#projects" class="btn btn-primary">See My Work 🚀</a>
+        <a href="#contact" class="btn btn-outline">Get In Touch ✦</a>
+      </div>
+
+      <!-- Scroll hint arrow -->
+      <div class="scroll-hint">↓ scroll to explore</div>
+    </div>
+  </section>
+
+  <!-- ===================== ABOUT SECTION ===================== -->
+  <section id="about">
+    <div class="section-wrapper">
+      <h2 class="section-title">About <span>Me</span></h2>
+
+      <div class="about-grid">
+        <!-- Left: avatar / identity card -->
+        <div class="about-card">
+          <!-- Emoji avatar with ring glow -->
+          <div class="avatar">👩🏽‍💻</div>
+          <h3>Asia Idrees</h3>
+          <p class="about-role">Software Engineer in the Making</p>
+
+          <!-- Fun facts list -->
+          <ul class="about-facts">
+            <li>🌙 Pakistani Muslim Woman in Tech</li>
+            <li>🎓 Marcy Lab School Fellow</li>
+            <li>💻 PERN Stack Developer</li>
+            <li>🌍 Building for diverse communities</li>
+            <li>✨ Driven by empathy + creativity</li>
+          </ul>
+        </div>
+
+        <!-- Right: bio paragraphs -->
+        <div class="about-text">
+          <p>
+            Hi, I'm <strong>Asia Idrees</strong> — an aspiring software engineer and Marcy Lab School fellow
+            passionate about building technology that makes everyday life easier and more accessible.
+          </p>
+          <p>
+            As a <strong>Pakistani Muslim woman in tech</strong>, I'm driven by creating thoughtful,
+            user-centered solutions that serve diverse communities. I believe great technology isn't
+            just about code — it's about <em>people</em>.
+          </p>
+          <p>
+            Through experiences in IT support, software development, and collaborative projects,
+            I bring <strong>curiosity, empathy, and creativity</strong> into everything I build.
+            I'm excited to keep creating products that help others feel more connected, supported,
+            and empowered.
+          </p>
+
+          <!-- Personality chips / tags -->
+          <div class="personality-tags">
+            <span>🧠 Problem Solver</span>
+            <span>🤝 Collaborator</span>
+            <span>🌱 Lifelong Learner</span>
+            <span>🎨 Creative Thinker</span>
+            <span>💡 Curious Mind</span>
+            <span>🚀 Dream Big</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SKILLS SECTION ===================== -->
+  <section id="skills">
+    <div class="section-wrapper">
+      <h2 class="section-title">My <span>Skills</span></h2>
+      <p class="section-sub">The tools and technologies I use to bring ideas to life</p>
+
+      <!-- Skills displayed as glowing cards in a grid -->
+      <div class="skills-grid">
+        <div class="skill-card"><span class="skill-icon">⚛️</span><p>React</p></div>
+        <div class="skill-card"><span class="skill-icon">🟨</span><p>JavaScript</p></div>
+        <div class="skill-card"><span class="skill-icon">🐍</span><p>Python</p></div>
+        <div class="skill-card"><span class="skill-icon">🟢</span><p>Node.js</p></div>
+        <div class="skill-card"><span class="skill-icon">🚂</span><p>Express</p></div>
+        <div class="skill-card"><span class="skill-icon">🐘</span><p>PostgreSQL</p></div>
+        <div class="skill-card"><span class="skill-icon">⚡</span><p>Vite</p></div>
+        <div class="skill-card"><span class="skill-icon">🎨</span><p>HTML & CSS</p></div>
+        <div class="skill-card"><span class="skill-icon">🐙</span><p>Git & GitHub</p></div>
+        <div class="skill-card"><span class="skill-icon">🖥️</span><p>CLI Tools</p></div>
+        <div class="skill-card"><span class="skill-icon">📱</span><p>Responsive Design</p></div>
+        <div class="skill-card"><span class="skill-icon">🔐</span><p>Auth & Sessions</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PROJECTS SECTION ===================== -->
+  <section id="projects">
+    <div class="section-wrapper">
+      <h2 class="section-title">My <span>Projects</span></h2>
+      <p class="section-sub">Real things I've built — from idea to deployed product</p>
+
+      <div class="projects-grid">
+
+        <!-- PROJECT 1: PediaMap -->
+        <div class="project-card">
+          <div class="project-header">
+            <span class="project-emoji">🏥</span>
+            <div class="project-badges">
+              <span class="badge">JavaScript</span>
+              <span class="badge">CSS</span>
+              <span class="badge">REST API</span>
+            </div>
+          </div>
+          <h3>PediaMap</h3>
+          <p class="project-desc">
+            An interactive web app that helps parents and caregivers find pediatric healthcare
+            providers across the U.S. Search by city, view provider details, and save favorites —
+            built with a clean, child-friendly UI and the NPI Registry API.
+          </p>
+          <ul class="project-features">
+            <li>✦ Search pediatric providers by city</li>
+            <li>✦ View detailed provider info & credentials</li>
+            <li>✦ Save favorites to localStorage</li>
+            <li>✦ Mobile-first responsive design</li>
+          </ul>
+          <div class="project-links">
+            <a href="https://github.com/asia-noboni-mls/mod-4-project" target="_blank" class="btn btn-small">GitHub ↗</a>
+          </div>
+        </div>
+
+        <!-- PROJECT 2: Shopping List CLI -->
+        <div class="project-card">
+          <div class="project-header">
+            <span class="project-emoji">🛒</span>
+            <div class="project-badges">
+              <span class="badge">Node.js</span>
+              <span class="badge">JavaScript</span>
+              <span class="badge">CLI</span>
+            </div>
+          </div>
+          <h3>Shopping List CLI</h3>
+          <p class="project-desc">
+            An interactive command-line shopping list manager built with Node.js. Add items with
+            name, quantity, and price — remove them, view totals, and manage your list entirely
+            from the terminal. Demonstrates clean code organization and input validation.
+          </p>
+          <ul class="project-features">
+            <li>✦ Add items with quantity & price</li>
+            <li>✦ Remove items by name</li>
+            <li>✦ View list with running total price</li>
+            <li>✦ Input validation & error handling</li>
+          </ul>
+          <div class="project-links">
+            <a href="https://github.com/asiaidre30/shopping-list-cli" target="_blank" class="btn btn-small">GitHub ↗</a>
+          </div>
+        </div>
+
+        <!-- PROJECT 3: ApplyFlow -->
+        <div class="project-card featured">
+          <div class="featured-label">✦ Featured</div>
+          <div class="project-header">
+            <span class="project-emoji">📋</span>
+            <div class="project-badges">
+              <span class="badge">React</span>
+              <span class="badge">Express</span>
+              <span class="badge">PostgreSQL</span>
+              <span class="badge">Node.js</span>
+            </div>
+          </div>
+          <h3>ApplyFlow</h3>
+          <p class="project-desc">
+            A full-stack PERN job application tracker with auth. Create an account, log in, and
+            track every job you apply to — company, role, status, date, and notes. Stay organized
+            during your job search with a clean dashboard.
+          </p>
+          <ul class="project-features">
+            <li>✦ User registration & login with sessions</li>
+            <li>✦ Create, view & delete job applications</li>
+            <li>✦ Track status & add personal notes</li>
+            <li>✦ Full REST API with auth middleware</li>
+          </ul>
+          <div class="project-links">
+            <a href="https://github.com/The-Marcy-Lab-School-Assignments/full-stack-project-remix-asiaidre30" target="_blank" class="btn btn-small">GitHub ↗</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== MINI GAME SECTION =====================
+       A canvas-based asteroid dodger game. The JS in script.js drives it. -->
+  <section id="game">
+    <div class="section-wrapper">
+      <h2 class="section-title">Mini <span>Game</span> 🕹️</h2>
+      <p class="section-sub">Take a break — dodge the asteroids with arrow keys or WASD!</p>
+
+      <div class="game-container">
+        <!-- Game canvas — where the game is drawn -->
+        <canvas id="gameCanvas" width="700" height="400"></canvas>
+
+        <!-- Game controls displayed below canvas -->
+        <div class="game-controls">
+          <button id="startBtn" class="btn btn-primary">▶ Start Game</button>
+          <button id="restartBtn" class="btn btn-outline" style="display:none;">↺ Restart</button>
+          <div class="game-score">Score: <span id="scoreDisplay">0</span></div>
+          <div class="game-hi-score">Best: <span id="hiScoreDisplay">0</span></div>
+        </div>
+
+        <!-- Key hint for desktop and mobile -->
+        <p class="game-hint">⌨️ Arrow keys / WASD to move &nbsp;|&nbsp; 📱 Tap the canvas to dodge</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== MEME GENERATOR SECTION =====================
+       Users pick a meme template and type top/bottom text.
+       A canvas renders the final meme which they can download. -->
+  <section id="memes">
+    <div class="section-wrapper">
+      <h2 class="section-title">Meme <span>Generator</span> 😂</h2>
+      <p class="section-sub">Because every great portfolio needs a meme generator. You're welcome.</p>
+
+      <div class="meme-container">
+        <!-- Left: controls panel -->
+        <div class="meme-controls">
+
+          <!-- Template picker — clicking sets the meme image -->
+          <label class="meme-label">Pick a Template</label>
+          <div class="meme-templates" id="memeTemplates">
+            <!-- Templates are injected by JavaScript -->
+          </div>
+
+          <!-- Text inputs -->
+          <label class="meme-label">Top Text</label>
+          <input type="text" id="topText" class="meme-input" placeholder="Top caption..." maxlength="60" />
+
+          <label class="meme-label">Bottom Text</label>
+          <input type="text" id="bottomText" class="meme-input" placeholder="Bottom caption..." maxlength="60" />
+
+          <!-- Font size slider -->
+          <label class="meme-label">Font Size: <span id="fontSizeVal">36</span>px</label>
+          <input type="range" id="fontSize" min="20" max="60" value="36" class="meme-slider" />
+
+          <!-- Action buttons -->
+          <button id="generateMeme" class="btn btn-primary" style="width:100%; margin-top:10px;">Generate Meme ✨</button>
+          <button id="downloadMeme" class="btn btn-outline" style="width:100%; margin-top:8px; display:none;">Download 💾</button>
+        </div>
+
+        <!-- Right: meme preview canvas -->
+        <div class="meme-preview">
+          <canvas id="memeCanvas" width="500" height="500"></canvas>
+          <p class="meme-hint">← Pick a template and add your text!</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CONTACT SECTION ===================== -->
+  <section id="contact">
+    <div class="section-wrapper">
+      <h2 class="section-title">Let's <span>Connect</span> ✦</h2>
+      <p class="section-sub">I'm open to opportunities, collabs, and good conversations!</p>
+
+      <div class="contact-grid">
+        <!-- GitHub link -->
+        <a href="https://github.com/asiaidre30" target="_blank" class="contact-card">
+          <span class="contact-icon">🐙</span>
+          <h4>GitHub</h4>
+          <p>@asiaidre30</p>
+        </a>
+
+        <!-- Email link -->
+        <a href="mailto:asiaidrees283@gmail.com" class="contact-card">
+          <span class="contact-icon">📧</span>
+          <h4>Email</h4>
+          <p>asiaidrees283@gmail.com</p>
+        </a>
+
+        <!-- LinkedIn -->
+        <a href="https://www.linkedin.com/in/asia-idrees/" target="_blank" class="contact-card">
+          <span class="contact-icon">💼</span>
+          <h4>LinkedIn</h4>
+          <p>Asia Idrees</p>
+        </a>
+      </div>
+
+      <!-- Closing quote -->
+      <p class="contact-quote">
+        "Great technology isn't just about code — it's about <em>people</em>." ✦
+      </p>
+    </div>
+  </section>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer>
+    <p>Made with 💜 by Asia Idrees &nbsp;·&nbsp; Somewhere in the galaxy &nbsp;✦</p>
+  </footer>
+
+  <!-- Main JavaScript file — handles stars, game, meme generator, nav -->
+  <script src="script.js"></script>
+</body>
+</html>
