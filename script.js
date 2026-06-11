@@ -780,3 +780,67 @@
   /* Draw initial placeholder */
   renderMeme();
 })();
+
+
+/* ============================================================
+   6. CONTACT FORM — submits to Formspree via fetch so the
+      page never reloads. Shows a success or error message.
+   ============================================================ */
+(function initContactForm() {
+  const form      = document.getElementById('contactForm');
+  const submitBtn = document.getElementById('formSubmitBtn');
+  const statusEl  = document.getElementById('formStatus');
+
+  if (!form) return;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault(); /* stop the normal browser form submission */
+
+    /* Basic client-side validation */
+    if (!form.checkValidity()) {
+      statusEl.textContent = '⚠️ Please fill in all required fields.';
+      statusEl.className   = 'form-status error';
+      return;
+    }
+
+    /* Show loading state */
+    submitBtn.disabled     = true;
+    submitBtn.textContent  = 'Sending... ✨';
+    statusEl.textContent   = '';
+    statusEl.className     = 'form-status';
+
+    try {
+      /* Send form data as JSON to Formspree */
+      const response = await fetch(form.action, {
+        method:  'POST',
+        headers: { 'Accept': 'application/json' },
+        body:    new FormData(form),
+      });
+
+      if (response.ok) {
+        /* Success — clear the form and show a thank-you message */
+        form.reset();
+        submitBtn.textContent = 'Message Sent! 🚀';
+        statusEl.textContent  = '✅ Thank you! I\'ll get back to you soon.';
+        statusEl.className    = 'form-status success';
+
+        /* Re-enable button after 4 seconds */
+        setTimeout(() => {
+          submitBtn.disabled    = false;
+          submitBtn.textContent = 'Send Message 🚀';
+        }, 4000);
+
+      } else {
+        /* Formspree returned an error */
+        throw new Error('Form submission failed');
+      }
+
+    } catch (err) {
+      /* Network error or Formspree error */
+      submitBtn.disabled    = false;
+      submitBtn.textContent = 'Send Message 🚀';
+      statusEl.textContent  = '❌ Something went wrong. Please email me directly at asiaidrees283@gmail.com';
+      statusEl.className    = 'form-status error';
+    }
+  });
+})();
