@@ -25,33 +25,135 @@
   resizeCanvas();
   window.addEventListener('resize', resizeCanvas);
 
-  /* Generate an array of star objects with random positions and sizes */
-  const STAR_COUNT = 220;
-  const stars = Array.from({ length: STAR_COUNT }, () => ({
-    x:       Math.random() * window.innerWidth,
-    y:       Math.random() * window.innerHeight,
-    radius:  Math.random() * 1.8 + 0.3,  /* 0.3 – 2.1 px */
-    opacity: Math.random(),               /* current brightness */
-    speed:   Math.random() * 0.008 + 0.002, /* twinkle speed */
-    dir:     Math.random() > 0.5 ? 1 : -1,  /* twinkle direction */
-  }));
+  /* Star colours — mix of white, purple, cyan, and gold for a rich galaxy look */
+  const STAR_COLORS = [
+    '255,255,255',   /* white       */
+    '255,255,255',   /* white (more common) */
+    '255,255,255',
+    '200,180,255',   /* soft purple */
+    '180,230,255',   /* ice blue    */
+    '255,220,120',   /* warm gold   */
+    '120,255,220',   /* cyan        */
+  ];
+
+  /* Generate stars — mix of tiny background stars and a few large bright ones */
+  const STAR_COUNT = 380;
+  const stars = Array.from({ length: STAR_COUNT }, (_, i) => {
+    const isBig = i < 18; /* first 18 are large bright hero stars */
+    return {
+      x:       Math.random() * window.innerWidth,
+      y:       Math.random() * window.innerHeight,
+      radius:  isBig ? 2.2 + Math.random() * 2.5 : Math.random() * 1.6 + 0.2,
+      opacity: Math.random(),
+      speed:   isBig ? Math.random() * 0.012 + 0.004 : Math.random() * 0.006 + 0.001,
+      dir:     Math.random() > 0.5 ? 1 : -1,
+      color:   STAR_COLORS[Math.floor(Math.random() * STAR_COLORS.length)],
+      glow:    isBig, /* big stars get a glow halo */
+    };
+  });
+
+  /* Shooting stars — streak across the canvas occasionally */
+  const shootingStars = [];
+  let shootTimer = 0;
+
+  function spawnShootingStar() {
+    shootingStars.push({
+      x:     Math.random() * canvas.width * 0.7,
+      y:     Math.random() * canvas.height * 0.4,
+      len:   80 + Math.random() * 120,
+      speed: 12 + Math.random() * 10,
+      angle: Math.PI / 5 + (Math.random() - 0.5) * 0.3,
+      life:  1.0,
+      decay: 0.018 + Math.random() * 0.01,
+    });
+  }
 
   /* Draw and animate every frame */
   function drawStars() {
-    /* Clear with a very dark purple-black (not full black for galaxy feel) */
-    ctx.fillStyle = '#05000f';
+    /* Deep space gradient background */
+    const grad = ctx.createRadialGradient(
+      canvas.width * 0.4, canvas.height * 0.3, 0,
+      canvas.width * 0.5, canvas.height * 0.5, canvas.width * 0.9
+    );
+    grad.addColorStop(0,   '#120030');
+    grad.addColorStop(0.4, '#08001a');
+    grad.addColorStop(1,   '#02000a');
+    ctx.fillStyle = grad;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+    /* Soft nebula clouds painted directly on the background */
+    [
+      { x: 0.15, y: 0.2,  r: 320, col: '100,20,180',  a: 0.07 },
+      { x: 0.8,  y: 0.6,  r: 280, col: '200,30,120',  a: 0.06 },
+      { x: 0.5,  y: 0.85, r: 250, col: '20,150,180',  a: 0.05 },
+      { x: 0.9,  y: 0.1,  r: 200, col: '80,0,200',    a: 0.05 },
+    ].forEach(n => {
+      const ng = ctx.createRadialGradient(
+        n.x * canvas.width, n.y * canvas.height, 0,
+        n.x * canvas.width, n.y * canvas.height, n.r
+      );
+      ng.addColorStop(0,   `rgba(${n.col},${n.a})`);
+      ng.addColorStop(1,   `rgba(${n.col},0)`);
+      ctx.fillStyle = ng;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    });
+
+    /* Draw regular stars */
     stars.forEach(star => {
-      /* Twinkle: slowly oscillate opacity */
       star.opacity += star.speed * star.dir;
       if (star.opacity >= 1 || star.opacity <= 0) star.dir *= -1;
 
+      ctx.save();
+      if (star.glow) {
+        /* Soft glow halo around big stars */
+        const halo = ctx.createRadialGradient(star.x, star.y, 0, star.x, star.y, star.radius * 4);
+        halo.addColorStop(0,   `rgba(${star.color},${star.opacity * 0.6})`);
+        halo.addColorStop(1,   `rgba(${star.color},0)`);
+        ctx.fillStyle = halo;
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius * 4, 0, Math.PI * 2);
+        ctx.fill();
+      }
       ctx.beginPath();
       ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`;
+      ctx.fillStyle = `rgba(${star.color},${star.opacity})`;
       ctx.fill();
+      ctx.restore();
     });
+
+    /* Spawn a shooting star occasionally (~every 3s on average) */
+    shootTimer++;
+    if (shootTimer > 180 && Math.random() < 0.015) {
+      spawnShootingStar();
+      shootTimer = 0;
+    }
+
+    /* Draw and age shooting stars */
+    for (let i = shootingStars.length - 1; i >= 0; i--) {
+      const s = shootingStars[i];
+      const tx = s.x + Math.cos(s.angle) * s.len;
+      const ty = s.y + Math.sin(s.angle) * s.len;
+
+      const sg = ctx.createLinearGradient(s.x, s.y, tx, ty);
+      sg.addColorStop(0,   `rgba(255,255,255,0)`);
+      sg.addColorStop(0.6, `rgba(220,200,255,${s.life * 0.9})`);
+      sg.addColorStop(1,   `rgba(255,255,255,${s.life})`);
+
+      ctx.save();
+      ctx.strokeStyle = sg;
+      ctx.lineWidth   = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(s.x, s.y);
+      ctx.lineTo(tx,  ty);
+      ctx.stroke();
+      ctx.restore();
+
+      /* Move and fade */
+      s.x    += Math.cos(s.angle) * s.speed;
+      s.y    += Math.sin(s.angle) * s.speed;
+      s.life -= s.decay;
+      if (s.life <= 0) shootingStars.splice(i, 1);
+    }
 
     requestAnimationFrame(drawStars);
   }
@@ -409,6 +511,10 @@
 
   /* ---- Keyboard controls ---- */
   window.addEventListener('keydown', e => {
+    const arrowKeys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'];
+    /* Prevent arrow keys from scrolling the page while the game is running */
+    if (running && arrowKeys.includes(e.key)) e.preventDefault();
+
     if (!running) return;
     if (e.key === 'ArrowLeft'  || e.key === 'a') ship.keys.left  = true;
     if (e.key === 'ArrowRight' || e.key === 'd') ship.keys.right = true;
@@ -472,24 +578,36 @@
   /* Meme templates — all sourced from imgflip's public image CDN.
      Add more by pasting any imgflip image URL into this array! */
   const TEMPLATES = [
-    { label: 'Drake',            url: 'https://i.imgflip.com/30b1gx.jpg'  },
-    { label: 'Distracted BF',    url: 'https://i.imgflip.com/1ur9b0.jpg'  },
-    { label: 'Change My Mind',   url: 'https://i.imgflip.com/24y43o.jpg'  },
-    { label: 'This is Fine',     url: 'https://i.imgflip.com/wxica.jpg'   },
-    { label: 'Two Buttons',      url: 'https://i.imgflip.com/1g8my4.jpg'  },
-    { label: 'Expanding Brain',  url: 'https://i.imgflip.com/1jwhww.jpg'  },
-    { label: 'Surprised Pikachu',url: 'https://i.imgflip.com/2kbn1e.jpg'  },
-    { label: 'Woman Yelling Cat',url: 'https://i.imgflip.com/345v97.jpg'  },
-    { label: 'Bernie Mittens',   url: 'https://i.imgflip.com/4t0m5.jpg'   },
-    { label: 'Gru Plan',         url: 'https://i.imgflip.com/26am.jpg'    },
-    { label: 'Galaxy Brain',     url: 'https://i.imgflip.com/3lmzyx.jpg'  },
-    { label: 'Always Has Been',  url: 'https://i.imgflip.com/46e43q.jpg'  },
-    { label: 'Hide the Pain',    url: 'https://i.imgflip.com/gk5el.jpg'   },
-    { label: 'One Does Not',     url: 'https://i.imgflip.com/1bij.jpg'    },
-    { label: 'Doge',             url: 'https://i.imgflip.com/4t0m5.jpg'   },
-    { label: 'Success Kid',      url: 'https://i.imgflip.com/1bhk.jpg'    },
-    { label: 'Everywhere',       url: 'https://i.imgflip.com/1o00in.jpg'  },
-    { label: 'Batman Slapping',  url: 'https://i.imgflip.com/9ehk.jpg'    },
+    { label: 'Drake',              url: 'https://i.imgflip.com/30b1gx.jpg'  },
+    { label: 'Distracted BF',      url: 'https://i.imgflip.com/1ur9b0.jpg'  },
+    { label: 'Change My Mind',     url: 'https://i.imgflip.com/24y43o.jpg'  },
+    { label: 'This is Fine',       url: 'https://i.imgflip.com/wxica.jpg'   },
+    { label: 'Two Buttons',        url: 'https://i.imgflip.com/1g8my4.jpg'  },
+    { label: 'Expanding Brain',    url: 'https://i.imgflip.com/1jwhww.jpg'  },
+    { label: 'Surprised Pikachu',  url: 'https://i.imgflip.com/2kbn1e.jpg'  },
+    { label: 'Woman Yelling Cat',  url: 'https://i.imgflip.com/345v97.jpg'  },
+    { label: 'Gru Plan',           url: 'https://i.imgflip.com/26am.jpg'    },
+    { label: 'Galaxy Brain',       url: 'https://i.imgflip.com/3lmzyx.jpg'  },
+    { label: 'Always Has Been',    url: 'https://i.imgflip.com/46e43q.jpg'  },
+    { label: 'Hide the Pain',      url: 'https://i.imgflip.com/gk5el.jpg'   },
+    { label: 'One Does Not',       url: 'https://i.imgflip.com/1bij.jpg'    },
+    { label: 'Success Kid',        url: 'https://i.imgflip.com/1bhk.jpg'    },
+    { label: 'Everywhere',         url: 'https://i.imgflip.com/1o00in.jpg'  },
+    { label: 'Batman Slapping',    url: 'https://i.imgflip.com/9ehk.jpg'    },
+    { label: 'Oprah You Get',      url: 'https://i.imgflip.com/3lmzyx.jpg'  },
+    { label: 'Sad Affleck',        url: 'https://i.imgflip.com/wx16a.jpg'   },
+    { label: 'Roll Safe',          url: 'https://i.imgflip.com/1h7in3.jpg'  },
+    { label: 'Waiting Skeleton',   url: 'https://i.imgflip.com/2fm6x.jpg'   },
+    { label: 'Disaster Girl',      url: 'https://i.imgflip.com/23ls.jpg'    },
+    { label: 'Ancient Aliens',     url: 'https://i.imgflip.com/xxy0x.jpg'   },
+    { label: 'UNO Draw 25',        url: 'https://i.imgflip.com/3lmzyx.jpg'  },
+    { label: 'Monkey Puppet',      url: 'https://i.imgflip.com/3oevdk.jpg'  },
+    { label: 'Blinking Guy',       url: 'https://i.imgflip.com/3cb6dy.jpg'  },
+    { label: 'Think About It',     url: 'https://i.imgflip.com/1otk96.jpg'  },
+    { label: 'Mocking Spongebob',  url: 'https://i.imgflip.com/1otk96.jpg'  },
+    { label: 'Running Away',       url: 'https://i.imgflip.com/3vfmyf.jpg'  },
+    { label: 'Panik Kalm',         url: 'https://i.imgflip.com/3whkl7.jpg'  },
+    { label: 'They\'re the Same',  url: 'https://i.imgflip.com/4hyt0n.jpg'  },
   ];
 
   let selectedImage = null; /* the currently loaded Image object */
