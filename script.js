@@ -222,11 +222,11 @@
 
 /* ============================================================
    4. MINI GAME — Asteroid Dodger
-      - A spaceship (▶) moves around the canvas
-      - Asteroids fall from the top at increasing speed
-      - Score increases every second you survive
-      - Collision ends the game
-      - Controls: Arrow keys, WASD, or tap/drag on mobile
+      - A spaceship moves around the canvas
+      - Asteroids fall faster and more frequently as score rises
+      - At score 10+: side asteroids join the chaos
+      - At score 20+: double spawns
+      - Controls: Arrow keys, WASD, or drag on mobile
    ============================================================ */
 (function initGame() {
   const canvas      = document.getElementById('gameCanvas');
@@ -236,13 +236,22 @@
   const scoreEl     = document.getElementById('scoreDisplay');
   const hiScoreEl   = document.getElementById('hiScoreDisplay');
 
+  /* Track whether the game canvas is visible on screen.
+     Arrow key scroll prevention activates whenever it's visible. */
+  let gameVisible = false;
+  const visObserver = new IntersectionObserver(entries => {
+    gameVisible = entries[0].isIntersecting;
+  }, { threshold: 0.3 });
+  visObserver.observe(canvas);
+
   /* Game state variables */
-  let gameLoop, asteroidTimer, scoreTimer;
-  let running    = false;
-  let score      = 0;
-  let hiScore    = 0;
-  let asteroids  = [];
-  let particles  = []; /* explosion particles on collision */
+  let gameLoop, asteroidTimer, scoreTimer, diffTimer;
+  let running       = false;
+  let score         = 0;
+  let hiScore       = 0;
+  let asteroids     = [];
+  let particles     = [];
+  let spawnInterval = 900; /* ms between asteroid spawns — decreases over time */
 
   /* Spaceship object */
   const ship = {
@@ -251,7 +260,6 @@
     w: 28,
     h: 28,
     speed: 5,
-    /* Track which keys are held down */
     keys: { left: false, right: false, up: false, down: false },
   };
 
@@ -359,21 +367,55 @@
     ctx.fillText(line2, canvas.width / 2, canvas.height / 2 + 20);
   }
 
-  /* ---- Asteroid factory ---- */
-  function spawnAsteroid() {
-    const size = 18 + Math.random() * 22; /* radius 18–40 */
-    /* Random jagged shape: 9 vertices at different distances from center */
-    const shape = Array.from({ length: 9 }, () => size * (0.6 + Math.random() * 0.5));
+  /* ---- Asteroid factory ----
+     fromSide = true means the asteroid enters from the left or right edge
+     instead of falling from the top — unlocked at score 10. */
+  function spawnAsteroid(fromSide = false) {
+    const size  = 18 + Math.random() * 26;
+    const shape = Array.from({ length: 10 }, () => size * (0.55 + Math.random() * 0.55));
+    /* Speed scales more aggressively with score than before */
+    const speed = 2.5 + score / 40 + Math.random() * 2.5;
 
-    asteroids.push({
-      x:     Math.random() * (canvas.width - 80) + 40,
-      y:     -size,
-      size,
-      shape,
-      speed: 2 + score / 80 + Math.random() * 2, /* gets faster as score grows */
-      rot:   0,
-      rotSpeed: (Math.random() - 0.5) * 0.05,
-    });
+    if (fromSide) {
+      /* Spawn from left or right, travel horizontally with slight downward drift */
+      const fromLeft = Math.random() > 0.5;
+      asteroids.push({
+        x:        fromLeft ? -size : canvas.width + size,
+        y:        30 + Math.random() * (canvas.height - 60),
+        vx:       fromLeft ? speed : -speed,
+        vy:       (Math.random() - 0.3) * 1.5,
+        size, shape, rot: 0,
+        rotSpeed: (Math.random() - 0.5) * 0.07,
+        side: true,
+      });
+    } else {
+      asteroids.push({
+        x:        Math.random() * (canvas.width - 80) + 40,
+        y:        -size,
+        vx:       (Math.random() - 0.5) * 1.2, /* slight horizontal drift */
+        vy:       speed,
+        size, shape, rot: 0,
+        rotSpeed: (Math.random() - 0.5) * 0.07,
+        side: false,
+      });
+    }
+  }
+
+  /* Spawn one or two asteroids depending on difficulty */
+  function spawnWave() {
+    spawnAsteroid(false);
+    /* At score 10+ occasionally add a side asteroid */
+    if (score >= 10 && Math.random() < 0.45) spawnAsteroid(true);
+    /* At score 20+ always spawn a pair */
+    if (score >= 20) spawnAsteroid(Math.random() < 0.4);
+  }
+
+  /* Ramp up spawn rate every 5 seconds — min cap at 320ms */
+  function increaseDifficulty() {
+    if (!running) return;
+    spawnInterval = Math.max(320, spawnInterval - 80);
+    clearInterval(asteroidTimer);
+    asteroidTimer = setInterval(spawnWave, spawnInterval);
   }
 
   /* ---- Explosion particles ---- */
@@ -421,14 +463,19 @@
     if (ship.keys.up    && ship.y - ship.h / 2 > 0)           ship.y -= ship.speed;
     if (ship.keys.down  && ship.y + ship.h / 2 < canvas.height) ship.y += ship.speed;
 
-    /* Move and rotate asteroids */
+    /* Move and rotate asteroids using vx/vy velocity */
     asteroids.forEach(a => {
-      a.y   += a.speed;
+      a.x   += a.vx;
+      a.y   += a.vy;
       a.rot += a.rotSpeed;
     });
 
-    /* Remove asteroids that fell off the bottom */
-    asteroids = asteroids.filter(a => a.y - a.size < canvas.height);
+    /* Remove asteroids that have left the canvas on any edge */
+    asteroids = asteroids.filter(a =>
+      a.y - a.size < canvas.height &&
+      a.x + a.size > 0 &&
+      a.x - a.size < canvas.width
+    );
 
     /* Update particles */
     particles.forEach(p => {
@@ -444,11 +491,16 @@
     drawParticles();
     drawShip();
 
-    /* Score counter in top-right */
-    ctx.font      = `bold 14px 'Orbitron', sans-serif`;
-    ctx.fillStyle = '#fbbf24';
+    /* Score + difficulty label */
+    const level = score < 10 ? 'EASY' : score < 20 ? 'MEDIUM' : score < 35 ? 'HARD' : '💀 INSANE';
+    const lvlColor = score < 10 ? '#22d3ee' : score < 20 ? '#fbbf24' : score < 35 ? '#f97316' : '#ef4444';
+    ctx.font      = `bold 13px 'Orbitron', sans-serif`;
     ctx.textAlign = 'right';
-    ctx.fillText(`Score: ${score}`, canvas.width - 16, 28);
+    ctx.fillStyle = '#fbbf24';
+    ctx.fillText(`Score: ${score}`, canvas.width - 16, 24);
+    ctx.fillStyle = lvlColor;
+    ctx.font      = `bold 11px 'Orbitron', sans-serif`;
+    ctx.fillText(level, canvas.width - 16, 42);
 
     /* Check collision with any asteroid */
     if (asteroids.some(hitTest)) {
@@ -461,25 +513,23 @@
 
   /* ---- Start game ---- */
   function startGame() {
-    score      = 0;
-    asteroids  = [];
-    particles  = [];
-    ship.x     = canvas.width / 2;
-    ship.y     = canvas.height - 60;
-    ship.keys  = { left: false, right: false, up: false, down: false };
+    score         = 0;
+    asteroids     = [];
+    particles     = [];
+    spawnInterval = 900;
+    ship.x        = canvas.width / 2;
+    ship.y        = canvas.height - 60;
+    ship.keys     = { left: false, right: false, up: false, down: false };
 
-    scoreEl.textContent = score;
+    scoreEl.textContent    = score;
     startBtn.style.display   = 'none';
     restartBtn.style.display = 'none';
     running = true;
 
-    /* Spawn a new asteroid every 1.2 seconds */
-    asteroidTimer = setInterval(spawnAsteroid, 1200);
-    /* Increase score by 1 every second survived */
-    scoreTimer    = setInterval(() => {
-      score++;
-      scoreEl.textContent = score;
-    }, 1000);
+    asteroidTimer = setInterval(spawnWave, spawnInterval);
+    scoreTimer    = setInterval(() => { score++; scoreEl.textContent = score; }, 1000);
+    /* Ramp up difficulty every 5 seconds */
+    diffTimer     = setInterval(increaseDifficulty, 5000);
 
     gameLoop = requestAnimationFrame(update);
   }
@@ -490,6 +540,7 @@
     cancelAnimationFrame(gameLoop);
     clearInterval(asteroidTimer);
     clearInterval(scoreTimer);
+    clearInterval(diffTimer);
 
     if (score > hiScore) {
       hiScore = score;
@@ -509,11 +560,13 @@
   startBtn.addEventListener('click',   startGame);
   restartBtn.addEventListener('click', startGame);
 
-  /* ---- Keyboard controls ---- */
+  /* ---- Keyboard controls ----
+     Block arrow-key page scrolling any time the game canvas is visible
+     on screen — not just when the game is actively running. */
+  const arrowKeys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'];
+
   window.addEventListener('keydown', e => {
-    const arrowKeys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'];
-    /* Prevent arrow keys from scrolling the page while the game is running */
-    if (running && arrowKeys.includes(e.key)) e.preventDefault();
+    if (gameVisible && arrowKeys.includes(e.key)) e.preventDefault();
 
     if (!running) return;
     if (e.key === 'ArrowLeft'  || e.key === 'a') ship.keys.left  = true;
