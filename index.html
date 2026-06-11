@@ -336,11 +336,23 @@
            Powered by Formspree — submissions are forwarded to asiaidrees283@gmail.com.
            ACTION STEP: go to https://formspree.io, sign up, create a new form,
            then replace YOUR_FORM_ID in the action URL below with your real form ID. -->
+      <!-- Galaxy HUD contact form -->
       <div class="contact-form-wrapper">
-        <h3 class="form-heading">Send Me a Message ✉️</h3>
-        <p class="form-sub">Fill out the form and I'll get back to you as soon as possible!</p>
 
-        <!-- form action points to Formspree; replace YOUR_FORM_ID after signing up -->
+        <!-- Top decorative bar -->
+        <div class="form-hud-bar">
+          <span class="hud-dot"></span>
+          <span class="hud-dot"></span>
+          <span class="hud-dot"></span>
+          <span class="hud-label">✦ TRANSMISSION OPEN ✦</span>
+          <span class="hud-dot"></span>
+          <span class="hud-dot"></span>
+          <span class="hud-dot"></span>
+        </div>
+
+        <h3 class="form-heading">Send Me a Message ✉️</h3>
+        <p class="form-sub">Drop a message into the galaxy — I'll find it and write back!</p>
+
         <form
           id="contactForm"
           action="https://formspree.io/f/xjgewzpe"
@@ -348,63 +360,31 @@
           class="contact-form"
           novalidate
         >
-          <!-- Two-column row: name + email -->
           <div class="form-row">
             <div class="form-group">
-              <label for="senderName">Your Name</label>
-              <input
-                type="text"
-                id="senderName"
-                name="name"
-                placeholder="e.g. Jane Doe"
-                required
-                class="form-input"
-              />
+              <label for="senderName">✦ Your Name</label>
+              <input type="text" id="senderName" name="name" placeholder="e.g. Jane Doe" required class="form-input" />
             </div>
             <div class="form-group">
-              <label for="senderEmail">Your Email</label>
-              <input
-                type="email"
-                id="senderEmail"
-                name="email"
-                placeholder="you@example.com"
-                required
-                class="form-input"
-              />
+              <label for="senderEmail">✦ Your Email</label>
+              <input type="email" id="senderEmail" name="email" placeholder="you@example.com" required class="form-input" />
             </div>
           </div>
 
-          <!-- Subject line -->
           <div class="form-group">
-            <label for="subject">Subject</label>
-            <input
-              type="text"
-              id="subject"
-              name="subject"
-              placeholder="What's this about?"
-              class="form-input"
-            />
+            <label for="subject">✦ Subject</label>
+            <input type="text" id="subject" name="subject" placeholder="What's this about?" class="form-input" />
           </div>
 
-          <!-- Message -->
           <div class="form-group">
-            <label for="message">Message</label>
-            <textarea
-              id="message"
-              name="message"
-              rows="6"
-              placeholder="Hey Asia, I wanted to reach out about..."
-              required
-              class="form-input form-textarea"
-            ></textarea>
+            <label for="message">✦ Message</label>
+            <textarea id="message" name="message" rows="6" placeholder="Hey Asia, I wanted to reach out about..." required class="form-input form-textarea"></textarea>
           </div>
 
-          <!-- Submit button + status message shown by JS -->
-          <button type="submit" class="btn btn-primary form-submit" id="formSubmitBtn">
+          <button type="submit" class="btn form-submit" id="formSubmitBtn">
             Send Message 🚀
           </button>
 
-          <!-- Success / error feedback shown after submission -->
           <p id="formStatus" class="form-status" aria-live="polite"></p>
         </form>
       </div>

@@ -829,55 +829,94 @@ section {
 .contact-quote em { color: var(--cyan); font-style: normal; }
 
 /* ============================================================
-   CONTACT FORM — big, bold, galaxy-matched
+   CONTACT FORM — Galaxy HUD style
    ============================================================ */
 
-/* Outer wrapper: full-width glowing panel with nebula accent */
 .contact-form-wrapper {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(145deg, #1a004a 0%, #0d0025 60%, #05000f 100%);
-  border: 1px solid rgba(147, 51, 234, 0.4);
+  background: linear-gradient(160deg, #150035 0%, #0a001f 50%, #04000e 100%);
+  border: 1px solid rgba(147, 51, 234, 0.5);
   border-radius: 24px;
-  padding: 72px 60px;
-  margin: 60px 0;
-  /* Double glow: purple on left, pink on right */
+  padding: 0;           /* padding handled by inner elements */
+  margin: 60px 0 48px;
   box-shadow:
-    -8px 0 60px rgba(147, 51, 234, 0.25),
-     8px 0 60px rgba(236, 72, 153, 0.18),
-     0 0 80px rgba(147, 51, 234, 0.15) inset;
+    0 0 0 1px rgba(192, 132, 252, 0.1),
+    0 0 60px rgba(147, 51, 234, 0.2),
+    0 0 120px rgba(147, 51, 234, 0.08) inset;
 }
 
-/* Decorative nebula blobs inside the form card */
-.contact-form-wrapper::before,
+/* Nebula blobs behind the form */
+.contact-form-wrapper::before {
+  content: '';
+  position: absolute;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(147,51,234,0.2) 0%, transparent 70%);
+  top: -150px; left: -150px;
+  pointer-events: none;
+}
 .contact-form-wrapper::after {
   content: '';
   position: absolute;
-  border-radius: 50%;
-  filter: blur(70px);
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(236,72,153,0.15) 0%, transparent 70%);
+  bottom: -100px; right: -100px;
   pointer-events: none;
-  opacity: 0.18;
 }
 
-.contact-form-wrapper::before {
-  width: 380px; height: 380px;
-  background: var(--purple);
-  top: -120px; left: -80px;
+/* ---- HUD top bar ---- */
+.form-hud-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px 40px;
+  border-bottom: 1px solid rgba(147, 51, 234, 0.3);
+  background: rgba(147, 51, 234, 0.08);
 }
 
-.contact-form-wrapper::after {
-  width: 300px; height: 300px;
-  background: var(--pink);
-  bottom: -80px; right: -60px;
+.hud-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--purple-light);
+  opacity: 0.6;
+  animation: hudBlink 2s ease-in-out infinite alternate;
 }
 
-/* Heading: large Orbitron with gradient */
+.hud-dot:nth-child(2) { animation-delay: 0.3s; background: var(--pink); }
+.hud-dot:nth-child(3) { animation-delay: 0.6s; background: var(--cyan); }
+.hud-dot:nth-child(5) { animation-delay: 0.9s; background: var(--cyan); }
+.hud-dot:nth-child(6) { animation-delay: 0.6s; background: var(--pink); }
+.hud-dot:nth-child(7) { animation-delay: 0.3s; background: var(--purple-light); }
+
+@keyframes hudBlink {
+  from { opacity: 0.3; transform: scale(0.9); }
+  to   { opacity: 1;   transform: scale(1.1); box-shadow: 0 0 8px currentColor; }
+}
+
+.hud-label {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: var(--purple-light);
+  text-transform: uppercase;
+}
+
+/* ---- Inner content padding ---- */
+.contact-form-wrapper .form-heading,
+.contact-form-wrapper .form-sub,
+.contact-form-wrapper .contact-form {
+  position: relative;
+  z-index: 1;
+}
+
 .form-heading {
   font-family: 'Orbitron', sans-serif;
-  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
   font-weight: 900;
   text-align: center;
-  margin-bottom: 12px;
+  padding: 40px 40px 0;
   background: var(--gradient-title);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -888,23 +927,22 @@ section {
 .form-sub {
   text-align: center;
   color: var(--text-secondary);
-  font-size: 1.05rem;
-  margin-bottom: 48px;
-  opacity: 0.9;
+  font-size: 1rem;
+  padding: 12px 40px 0;
+  margin-bottom: 0;
 }
 
-/* Form container — wider, more breathing room */
+/* The actual form */
 .contact-form {
   display: flex;
   flex-direction: column;
   gap: 24px;
-  max-width: 780px;
-  margin: 0 auto;
-  position: relative; /* above pseudo-element blobs */
+  padding: 40px 48px 48px;
+  position: relative;
   z-index: 1;
 }
 
-/* Side-by-side row: name + email */
+/* Two-column row */
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -917,21 +955,22 @@ section {
   gap: 10px;
 }
 
-/* Label */
+/* Labels look like HUD readouts */
 .form-group label {
   font-family: 'Orbitron', sans-serif;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  color: var(--purple-light);
-  letter-spacing: 2px;
+  color: var(--cyan);
+  letter-spacing: 2.5px;
   text-transform: uppercase;
+  text-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
 }
 
-/* Inputs and textarea */
+/* Inputs — dark glass panels with cyan border */
 .form-input {
-  background: rgba(147, 51, 234, 0.08);
-  border: 1.5px solid rgba(147, 51, 234, 0.35);
-  border-radius: 12px;
+  background: rgba(5, 0, 20, 0.6);
+  border: 1.5px solid rgba(34, 211, 238, 0.25);
+  border-radius: 10px;
   color: var(--text-primary);
   font-family: 'Inter', sans-serif;
   font-size: 1rem;
@@ -939,20 +978,26 @@ section {
   outline: none;
   transition: var(--transition);
   width: 100%;
+  backdrop-filter: blur(4px);
 }
 
-.form-input::placeholder { color: var(--text-muted); font-size: 0.95rem; }
+.form-input::placeholder {
+  color: rgba(107, 107, 143, 0.7);
+  font-style: italic;
+}
 
+/* Focus: cyan glow matching the HUD theme */
 .form-input:focus {
-  border-color: var(--purple-light);
-  background: rgba(147, 51, 234, 0.14);
-  box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.2), var(--glow-purple);
+  border-color: var(--cyan);
+  background: rgba(34, 211, 238, 0.06);
+  box-shadow:
+    0 0 0 3px rgba(34, 211, 238, 0.12),
+    0 0 20px rgba(34, 211, 238, 0.2);
 }
 
-/* Invalid highlight */
 .form-input:invalid:not(:placeholder-shown) {
   border-color: #ef4444;
-  box-shadow: 0 0 12px rgba(239, 68, 68, 0.3);
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.25);
 }
 
 /* Textarea */
@@ -962,48 +1007,78 @@ section {
   line-height: 1.7;
 }
 
-/* Submit — big, full-width, animated */
+/* Submit button — full width, massive, glowing */
 .form-submit {
   width: 100%;
   padding: 20px;
-  font-size: 1.05rem;
-  letter-spacing: 2px;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 3px;
   border-radius: 50px;
-  margin-top: 8px;
-  background: var(--gradient-btn);
-  box-shadow: var(--glow-purple), 0 4px 24px rgba(236, 72, 153, 0.25);
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  background: linear-gradient(135deg, #7c3aed, #ec4899, #22d3ee);
+  background-size: 200% 200%;
+  animation: gradientShift 4s ease infinite;
+  box-shadow:
+    0 0 30px rgba(147, 51, 234, 0.4),
+    0 0 60px rgba(236, 72, 153, 0.2),
+    0 4px 20px rgba(0,0,0,0.4);
   transition: var(--transition);
+}
+
+/* Animated gradient on the button */
+@keyframes gradientShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 .form-submit:hover:not(:disabled) {
   transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 0 40px rgba(147, 51, 234, 0.7), 0 6px 30px rgba(236, 72, 153, 0.35);
+  box-shadow:
+    0 0 50px rgba(147, 51, 234, 0.6),
+    0 0 80px rgba(236, 72, 153, 0.3),
+    0 8px 30px rgba(0,0,0,0.4);
 }
 
 .form-submit:disabled {
-  opacity: 0.55;
+  opacity: 0.5;
   cursor: not-allowed;
   transform: none;
+  animation: none;
 }
 
-/* Status message */
+/* Status feedback */
 .form-status {
   text-align: center;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
   min-height: 1.5em;
-  letter-spacing: 0.5px;
-  transition: var(--transition);
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 1px;
+  font-size: 0.8rem;
 }
 
-.form-status.success { color: #4ade80; text-shadow: 0 0 12px rgba(74,222,128,0.4); }
-.form-status.error   { color: #f87171; text-shadow: 0 0 12px rgba(248,113,113,0.4); }
+.form-status.success {
+  color: #4ade80;
+  text-shadow: 0 0 16px rgba(74,222,128,0.5);
+}
+.form-status.error {
+  color: #f87171;
+  text-shadow: 0 0 16px rgba(248,113,113,0.5);
+}
 
 /* Mobile */
 @media (max-width: 640px) {
-  .form-row { grid-template-columns: 1fr; }
-  .contact-form-wrapper { padding: 40px 24px; }
-  .form-heading { font-size: 1.4rem; }
+  .form-row                     { grid-template-columns: 1fr; }
+  .contact-form                 { padding: 32px 24px 40px; }
+  .form-heading                 { padding: 32px 24px 0; font-size: 1.3rem; }
+  .form-sub                     { padding: 10px 24px 0; }
+  .form-hud-bar                 { padding: 14px 20px; gap: 8px; }
+  .hud-label                    { font-size: 0.6rem; letter-spacing: 2px; }
 }
 
 /* ============================================================
